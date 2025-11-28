@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: wma_postgres_db
+    environment:
+      TZ: Asia/Bangkok
+      POSTGRES_DB: wma_db
+      POSTGRES_USER: wma_user
+      POSTGRES_PASSWORD: simplePassword
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "wma_db", "-U", "wma_user"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_wma:/var/lib/postgresql/data
+
+volumes:
+  postgres_data_wma:
+    driver: local

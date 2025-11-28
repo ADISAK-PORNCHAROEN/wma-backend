@@ -1,0 +1,8 @@
+# Build output
+dist
+
+# Node dependencies
+node_modules
+
+# Generated files (e.g., Prisma, TypeORM migrations)
+**/migrations/*.ts

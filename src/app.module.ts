@@ -9,6 +9,7 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { ProcurementModule } from './procurement/procurement.module';
+import { BudgetModule } from './procurement/budget/budget.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ProcurementModule } from './procurement/procurement.module';
       rootPath: join(__dirname, '..', 'uploads'), // path จริงของโฟลเดอร์ uploads
       serveRoot: '/uploads', // URL base path
     }),
+    BudgetModule,  // ← Import ก่อน ProcurementModule
     ProcurementModule,
   ],
   controllers: [AppController],

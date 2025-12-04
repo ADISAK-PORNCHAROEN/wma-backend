@@ -16,6 +16,7 @@ export class ProcurementService {
     return body;
   }
 
+  // fix issue
   findOne(id: number) {
     return `This action returns a #${id} procurement`;
   }

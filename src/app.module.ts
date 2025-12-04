@@ -10,6 +10,9 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { ProcurementModule } from './procurement/procurement.module';
 import { BudgetModule } from './procurement/budget/budget.module';
+import { AssetsModule } from './assets/assets.module';
+import { InventoryModule } from './inventory/inventory.module';
+import { DepartmentsModule } from './departments/departments.module';
 
 @Module({
   imports: [
@@ -19,7 +22,7 @@ import { BudgetModule } from './procurement/budget/budget.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
+      host: process.env.DB_HOST || 'postgres',
       port: parseInt(process.env.DB_PORT ?? '5432', 10),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
@@ -33,6 +36,9 @@ import { BudgetModule } from './procurement/budget/budget.module';
     }),
     BudgetModule,  // ← Import ก่อน ProcurementModule
     ProcurementModule,
+    AssetsModule,
+    InventoryModule,
+    DepartmentsModule,
   ],
   controllers: [AppController],
   providers: [

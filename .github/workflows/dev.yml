@@ -1,28 +1,39 @@
-name: NodeJS with Gulp
+name: Build & Deploy Docker
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "develop" ]
+  # pull_request:
+  #   branches: [ "develop" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Build
+    # 1. สร้าง Docker Image (Build)
+    - name: Build Docker Image
       run: |
-        npm install
-        gulp
+        # สร้าง Image 
+        docker build -t wma-backend:latest .
+
+    # 2. แปลง Image เป็นไฟล์ .tar.gz (Save & Zip)
+    - name: Save Docker Image to file
+      run: |
+        docker save wma-backend:latest | gzip > wma-backend-image.tar.gz
+
+    # 3. ส่งไฟล์ไปที่ Server (Push to Server)
+    - name: Copy Image to Server via SCP
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SERVER_PORT }}
+        source: "wma-backend-image.tar.gz"
+        target: /home/fluke/develop/wma
+        overwrite: true
+        debug: true

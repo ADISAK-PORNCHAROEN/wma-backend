@@ -37,3 +37,38 @@ jobs:
         target: /home/fluke/develop/wma
         overwrite: true
         debug: true
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_PORT }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # สคริปต์ที่จะไปรันบน Server
+          script: |
+            echo "📂 Navigate to project folder..."
+            cd /home/fluke/develop/wma
+
+            echo "📦 Loading new image..."
+            # 1. โหลด Image จากไฟล์ .tar.gz เข้า Docker
+            gunzip -c wma-backend-image.tar.gz | docker load
+
+            echo "🧹 Cleaning up temp file..."
+            # 2. ลบไฟล์บีบอัดทิ้งเพื่อประหยัดพื้นที่
+            rm wma-backend-image.tar.gz
+
+            echo "🚀 Restarting containers..."
+            # 3. สั่ง Restart ด้วย Docker Compose
+            docker compose up -d backend
+
+            echo "🗑️ Pruning old images..."
+            # 4. ลบ Image เก่าที่ไม่ได้ใช้ (Dangling images)
+            docker image prune -f
+
+            echo "✅ Deployment Completed!"

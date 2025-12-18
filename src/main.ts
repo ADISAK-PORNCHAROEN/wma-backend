@@ -31,7 +31,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('OPM API')
+    .setTitle('WMA API')
     .setDescription(
       'ระบบยืนยันตัวตนและจัดการ Session (OTP, JWT Bearer, Revoke)',
     )
